@@ -10,17 +10,24 @@ nav {
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%);
     padding: 1em;
     background-color: #efefefab;   
-    font-weight: bold; 
+    align-items: baseline;
+    font-size: 1.2em;
 }
 nav > a {
     color: black;
-    font-size: 1.5em;
+    
     text-decoration: none;
     transition : color 1s;
+    margin: 0em 1em;
 }
 nav > a:hover {
     color: #005c03;
     transition : color 1s;
+}
+
+a.home{
+    font-size: 1.5em;
+    font-weight: bold; 
 }
 div#main {
     margin: 1em;
