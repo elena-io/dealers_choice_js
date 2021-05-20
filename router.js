@@ -1,10 +1,14 @@
-const app = require('express').Router;
-
+// creating a router 
+const router = require('express').Router();
 const db = require('./db');
 
-const { client, SyncSeed, createYourOwn } = db;
+module.exports = router;
 
-app.get('/', async (req, res, next)=> {
+//exporting our methods
+const { client, SyncSeed, createYourOwn } = db;
+//const client = db.client;
+
+router.get('/', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM foodExperiences');
         const foodExp = response.rows;
@@ -16,7 +20,8 @@ app.get('/', async (req, res, next)=> {
             </head>
             <body>
                 <nav>
-                    <a href="/"> Home </a>
+                    <a href="/" class="home"> Home </a>
+                    <a href="/add-your-own"> Add your own</a>
                 </nav>
                 <div id="main">
                 <h1>Food Experiences</h1>
@@ -25,7 +30,7 @@ app.get('/', async (req, res, next)=> {
                     foodExp.map(food=> 
                         `
                         <li> 
-                            <a href="/${food.url}">
+                            <a href="/${ food.name.toLowerCase().trim().split(/\s+/).join('-') }">
                                 ${ food.name }
                             </a>
                         </li>
@@ -46,7 +51,64 @@ app.get('/', async (req, res, next)=> {
    
 })
 
-app.get('/italian-food', async (req, res, next)=> {
+router.get('/add-your-own', async (req, res, next)=> {
+    const response = await client.query('SELECT * FROM foodExperiences');
+    const foodExp = response.rows;
+    try {
+        res.send(
+            `
+        <html>
+            <head>
+                <link rel="stylesheet" href='/assets/styles.css' />
+            </head>
+            <body>
+                <nav>
+                    <a href="/" class="home"> Home </a>
+                    <a href="/add-your-own"> Add your own</a>
+                </nav>
+                <div id="main">
+                    <h1>Add your own yammy experience</h1>
+                    <ul>
+                    ${
+                        foodExp.map(food=> 
+                            `
+                            <li> 
+                                <a href="/${ food.name.toLowerCase().trim().split(/\s+/).join('-') }">
+                                    ${ food.name }
+                                </a>
+                            </li>
+                            `
+                        ).join('')
+                    } 
+                    <ul>
+                    <div class="form">
+                        <form method = "POST" action = "/add-your-own">
+                            <input name="name"/>
+                            <button> Add Your Own Experience </button>
+                        </form>
+                    </div>
+                </div> 
+            </body>
+        </html>
+    `)
+    }
+    catch(ex) {
+        next(ex);
+    }
+})
+
+router.post('/add-your-own', async (req, res, next) => {
+    try {
+        res.redirect('/add-your-own');
+        //await createYourOwn();
+        console.log(req.body);
+    }
+    catch(ex) {
+        next(ex);
+    }
+})
+
+router.get('/italian-food', async (req, res, next)=> {
     try{
         const response = await client.query('SELECT * FROM italianExperiences');
         const foodExp = response.rows;
@@ -57,7 +119,8 @@ app.get('/italian-food', async (req, res, next)=> {
                 </head>
                 <body>
                     <nav>
-                        <a href="/"> Home </a>
+                        <a href="/" class="home"> Home </a>
+                        <a href="/add-your-own"> Add your own</a>
                     </nav>
                     <div id="main">
                     <h1>Italian Food</h1>
@@ -82,7 +145,7 @@ app.get('/italian-food', async (req, res, next)=> {
         console.log(ex);
     }
 })
-app.get('/italian-food/:id', async (req, res, next)=> {
+router.get('/italian-food/:id', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM italianExperiences');
         const foodExp = response.rows;
@@ -93,7 +156,8 @@ app.get('/italian-food/:id', async (req, res, next)=> {
                 </head>
                 <body>
                     <nav>
-                        <a href="/"> Home </a>
+                        <a href="/" class="home"> Home </a>
+                        <a href="/add-your-own"> Add your own</a>
                     </nav>
                     <div id="main">
                     <h1>Italian Food</h1>
@@ -119,7 +183,7 @@ app.get('/italian-food/:id', async (req, res, next)=> {
     }
     
 })
-app.get('/mexican-food', async (req, res, next)=> {
+router.get('/mexican-food', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM mexicanExperiences');
         const foodExp = response.rows;
@@ -130,7 +194,8 @@ app.get('/mexican-food', async (req, res, next)=> {
             </head>
             <body>
                 <nav>
-                    <a href="/"> Home </a>
+                    <a href="/" class="home"> Home </a>
+                    <a href="/add-your-own"> Add your own</a>
                 </nav>
                 <div id="main">
                 <h1>Mexican Food</h1>
@@ -157,7 +222,7 @@ app.get('/mexican-food', async (req, res, next)=> {
     }
     
 })
-app.get('/mexican-food/:id', async (req, res, next)=> {
+router.get('/mexican-food/:id', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM mexicanExperiences');
         const foodExp = response.rows;
@@ -168,7 +233,8 @@ app.get('/mexican-food/:id', async (req, res, next)=> {
                 </head>
                 <body>
                     <nav>
-                        <a href="/"> Home </a>
+                        <a href="/" class="home"> Home </a>
+                        <a href="/add-your-own"> Add your own</a>
                     </nav>
                     <div id="main">
                     <h1>Mexican Food</h1>
@@ -194,7 +260,7 @@ app.get('/mexican-food/:id', async (req, res, next)=> {
     }
     
 })
-app.get('/spanish-food', async (req, res, next)=> {
+router.get('/spanish-food', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM spanishExperiences');
         const foodExp = response.rows;
@@ -205,7 +271,8 @@ app.get('/spanish-food', async (req, res, next)=> {
                 </head>
                 <body>
                     <nav>
-                        <a href="/"> Home </a>
+                        <a href="/" class="home"> Home </a>
+                        <a href="/add-your-own"> Add your own</a>
                     </nav>
                     <div id="main">
                     <h1>Spanish Food</h1>
@@ -234,7 +301,7 @@ app.get('/spanish-food', async (req, res, next)=> {
     
     
 })
-app.get('/spanish-food/:id', async (req, res, next)=> {
+router.get('/spanish-food/:id', async (req, res, next)=> {
     try {
         const response = await client.query('SELECT * FROM spanishExperiences');
         const foodExp = response.rows;
@@ -245,7 +312,8 @@ app.get('/spanish-food/:id', async (req, res, next)=> {
                 </head>
                 <body>
                     <nav>
-                        <a href="/"> Home </a>
+                        <a href="/" class="home"> Home </a>
+                        <a href="/add-your-own"> Add your own</a>
                     </nav>
                     <div id="main">
                     <h1>Spanish Food</h1>
@@ -273,6 +341,3 @@ app.get('/spanish-food/:id', async (req, res, next)=> {
     }
     
 })
-
-
-module.exports = app;

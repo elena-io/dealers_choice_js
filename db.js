@@ -5,8 +5,8 @@ const express = require('express');
 const client = new pg.Client('postgres://localhost/db_dealers_choice')
 
 //create a new method to create your own new Food Experience
-const createYourOwn = async(name, url) => {
-
+const createYourOwn = async({ name }) => {
+   return (await client.query(`INSERT INTO foodExperiences(name) VALUES(${name})`))
 }
 
 const SyncSeed = async() => {
